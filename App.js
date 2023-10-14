@@ -11,6 +11,14 @@ const validationSchema = Yup.object().shape({
   .max(12,'Should be less than 12 chars'),
 });
 
+/**
+ * This is the main component of the password generator app.
+ * It contains the state variables for password, password visibility, lowercase, uppercase, number, and special character.
+ * It also has functions to generate a password string, create a password, and reset the password state.
+ * The component renders a form with input fields for password length and checkboxes for including lowercase, uppercase, numbers, and special characters.
+ * When the form is submitted, it generates a password string based on the selected options and displays it in a card component.
+ * The component uses Formik and BouncyCheckbox libraries for form handling and checkbox styling respectively.
+ */
 export default function App() {
 
   const [password, setPassword] = useState('');
@@ -276,9 +284,13 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   generatedPassword: {
-    fontSize: 22,
+    fontSize: 28,
     textAlign: 'center',
     marginBottom: 12,
-    color:'#000'
+    color: '#16213e',
+    fontWeight: 'bold',
+    textShadowColor: '#758283',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });
