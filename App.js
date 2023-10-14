@@ -1,12 +1,13 @@
 import React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-
+import { SafeAreaView, ScrollView,TouchableOpacity, StyleSheet, Text, View, TextInput } from 'react-native';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 // validate number with Yup
 const validationSchema = Yup.object().shape({
-  passLength: Yup.number().required('Length Tery Abu Deni').min(4,'Should be of 4 chars')
+  passwordLength: Yup.number().required('Length Tery Abu Deni').min(4,'Should be of 4 chars')
   .max(12,'Should be less than 12 chars'),
 });
 
@@ -20,7 +21,7 @@ export default function App() {
   const [number, setNumber] = useState(false);
   const [specialChar, setSpecialChar] = useState(false);
 
-  const generatedpasswordString = (passLength) => {
+  const generatedpasswordString = (passwordLength) => {
     let characters = '';
     const lowerCaseChars = 'abcdefghijklmnopqrstuvwxyz';
     const upperCaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -38,9 +39,12 @@ export default function App() {
     if(specialChar){
       characters += specialChars;
     }
-    const pswrdFinal = createpassword(characters,passLength);
+    const pswrdFinal = createpassword(characters,passwordLength);
     setPassword(pswrdFinal);
     setIsPasswordVisible(true);
+    console.log("Password is -> ",password);
+    console.log("Is Password generated ->",isPasswordVisible);
+
   }
 
   const createpassword = (characters,passwordLength) => {
@@ -65,20 +69,132 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-     
-    </View>
+    <ScrollView keyboardShouldPersistTaps='handled' >
+        <SafeAreaView style={styles.appContainer}>
+           <View style={styles.formContainer} >
+           <Text style={styles.title}>Generate Password</Text>
+             <Formik
+       initialValues={{ passwordLength: '' }}
+       validationSchema={validationSchema}
+       onSubmit={values => {
+        console.log(values);
+        generatedpasswordString(Number(values.passwordLength));
+        
+       }}
+     >
+       {({
+           values,
+           errors,
+           touched,
+           isValid,
+           handleChange,
+           handleSubmit,
+           handleReset,
+         /* and other goodies */
+       }) => (
+         <>
+           <View style={styles.inputWrapper} >
+            <View style={styles.inputColumn}>
+              <Text style={styles.heading}>Password Length</Text>
+              {touched.passwordLength && errors.passwordLength && (
+              <Text style={styles.errorText}>
+                {errors.passwordLength}
+              </Text>
+            )}
+            </View>
+                <TextInput 
+                     style={styles.inputStyle} 
+                     value={values.passwordLength} 
+                     onChangeText={handleChange('passwordLength')}
+                      placeholder='Password Length Ex. 7'
+                      keyboardType='numeric'
+                >
+                  
+                </TextInput>
+            </View>
+          <View style={styles.inputWrapper}>
+          <Text style={styles.heading}>Include lowercase</Text>
+          <BouncyCheckbox
+          disableBuiltInState
+          isChecked={lowerCase}
+          onPress={() => setLowerCase(!lowerCase)}
+          fillColor="#29AB87"
+          />
+         </View>
+         <View style={styles.inputWrapper}>
+                  <Text style={styles.heading}>Include Uppercase letters</Text>
+                  <BouncyCheckbox
+                    disableBuiltInState
+                    isChecked={upperCase}
+                    onPress={() => setUpperCase(!upperCase)}
+                    fillColor="#FED85D"
+                  />
+          </View>
+                <View style={styles.inputWrapper}>
+                  <Text style={styles.heading}>Include Numbers</Text>
+                  <BouncyCheckbox
+                    disableBuiltInState
+                    isChecked={number}
+                    onPress={() => setNumber(!number)}
+                    fillColor="#C9A0DC"
+                  />
+                </View>
+                <View style={styles.inputWrapper}>
+                  <Text style={styles.heading}>Include Symbols</Text>
+                  <BouncyCheckbox
+                    disableBuiltInState
+                    isChecked={specialChar}
+                    onPress={() => setSpecialChar(!specialChar)}
+                    fillColor="#FC80A5"
+                  />
+                </View>
+
+           <View style={styles.formActions}>
+           <TouchableOpacity
+          disabled={!isValid}
+          style={styles.primaryBtn}
+          onPress={handleSubmit}
+          >
+            <Text style={styles.primaryBtnTxt}>Generate</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+          style={styles.secondaryBtn}
+          onPress={ () => {
+            handleReset();
+            resetPasswordState()
+          }}
+          >
+            <Text style={styles.secondaryBtnTxt}>Reset</Text>
+          </TouchableOpacity>
+           </View>  
+
+         </>
+       )}
+             </Formik>
+           </View>
+           {isPasswordVisible? (
+          <View style={[styles.card, styles.cardElevated]}>
+            <Text style={styles.subTitle}>Result:</Text>
+            <Text style={styles.description}>Long Press to copy</Text>
+            <Text selectable={true} style={styles.generatedPassword}>{password}</Text>
+          </View>
+        ) : null}
+        </SafeAreaView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
+    // borderWidth: 1,
+    // borderColor:'black'
   },
   formContainer: {
     margin: 8,
     padding: 8,
+    // borderWidth: 1,
+    // borderColor:'black'
   },
   title: {
     fontSize: 32,
