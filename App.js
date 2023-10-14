@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 
 // validate number with Yup
 const validationSchema = Yup.object().shape({
-  passLength: Yup.number().required().min(4,'Should be of 4 chars')
+  passLength: Yup.number().required('Length Tery Abu Deni').min(4,'Should be of 4 chars')
   .max(12,'Should be less than 12 chars'),
 });
 
